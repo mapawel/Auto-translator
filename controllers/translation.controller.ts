@@ -1,24 +1,33 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { v2 } from '@google-cloud/translate';
+import { TranslationControllerException } from './exceptions/Translation-controller.exception';
 
 class TranslationController {
-  private readonly translate: v2.Translate = new v2.Translate();
+  private readonly translateApi: v2.Translate = new v2.Translate();
+  private payload: object = {};
+  private target: string = 'en';
 
-  public getTranslationasync = async (req: Request, res: Response) => {
+  public translate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const text = ['próba', 'lubię to'];
-      const target = 'en';
-      let [translations] = await this.translate.translate(text, target);
-      translations = Array.isArray(translations)
-        ? translations
-        : [translations];
-      translations.forEach((translation: string, i: number) => {
-        console.log(`${text[i]} => ${translation}`);
-      });
+      this.payload = req.body.payload;
+      this.target = req.body.target;
 
-      return res.send(`Welcome to test route!!`);
-    } catch (err: any) {
-      console.log('err ----> ', err);
+      let [translations] = await this.translateApi.translate(
+        JSON.stringify(this.payload),
+        this.target
+      );
+      return res.json(JSON.parse(translations));
+    } catch {
+      next(
+        new TranslationControllerException({
+          text: JSON.stringify(req.body.payload),
+          target: JSON.stringify(req.body.target),
+        })
+      );
     }
   };
 }
