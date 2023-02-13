@@ -1,6 +1,8 @@
 import express, { Router } from 'express';
+import dotenvsafe from 'dotenv-safe'
 import { Application } from 'express';
 import { AppRouter } from './routes/app.router';
+dotenvsafe.config()
 
 class Server {
   private readonly port: number | string = process.env.PORT || 9000;
