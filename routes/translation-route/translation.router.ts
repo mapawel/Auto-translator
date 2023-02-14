@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import TranslationController from '../../controllers/translation.controller';
+import TranslationController from '../../controllers/translation/translation.controller';
 import { translationValidator } from './translation-route.validator';
 
 export class TranslationRouter {

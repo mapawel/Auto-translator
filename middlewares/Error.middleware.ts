@@ -14,11 +14,11 @@ class ErrorMiddleware {
     if (error instanceof ValidatorException)
       return res
         .status(error.code)
-        .json({ message: error.message, errors: error.errors });
+        .json({ message: error.message, errors: error.errorPayload });
 
     return res
-      .status(error.code || 500)
-      .json(error.message || 'Ups! Something went wrong... Try again later.');
+      .status(error.code)
+      .json(error.message);
   };
 }
 
