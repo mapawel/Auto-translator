@@ -4,15 +4,16 @@ import { TranslationControllerException } from './Translation-controller.excepti
 import { validationResult, Result, ValidationError } from 'express-validator';
 import { ValidatorException } from '../../exceptions/Validator.exception';
 import { Text } from './Text.type';
+import { ITranslationController } from './Translation-controller.interface';
 
-class TranslationController {
+class TranslationController implements ITranslationController {
   private readonly translateApi: v2.Translate = new v2.Translate();
 
   public translate = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ) => {
+  ): Promise<void | Response<any, Record<string, any>>> => {
     try {
       const errors: Result<ValidationError> = validationResult(req);
       if (!errors.isEmpty())
@@ -24,7 +25,7 @@ class TranslationController {
         JSON.stringify(text),
         target
       );
-      
+
       return res.json(JSON.parse(translations));
     } catch (err: any) {
       return next(

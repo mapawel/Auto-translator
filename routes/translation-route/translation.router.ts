@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
-import TranslationController from '../../controllers/translation/translation.controller';
+import translationController from '../../controllers/translation/translation.controller';
+import cachedTranslationController from '../../controllers/translation/Cached-translation.controller';
 import { translationValidator } from './translation-route.validator';
 
 export class TranslationRouter {
@@ -9,7 +10,7 @@ export class TranslationRouter {
     this.router.post(
       '/translate',
       translationValidator,
-      TranslationController.translate
+      cachedTranslationController.translate
     );
   }
 }
