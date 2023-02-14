@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { v2 } from '@google-cloud/translate';
 import { TranslationControllerException } from './exceptions/Translation-controller.exception';
+import { validationResult, Result, ValidationError } from 'express-validator';
+import { ValidatorException } from '../exceptions/Validator.exception';
 
 class TranslationController {
   private readonly translateApi: v2.Translate = new v2.Translate();
-  private payload: object = {};
-  private target: string = 'en';
 
   public translate = async (
     req: Request,
@@ -13,18 +13,22 @@ class TranslationController {
     next: NextFunction
   ) => {
     try {
-      this.payload = req.body.payload;
-      this.target = req.body.target;
+      const errors: Result<ValidationError> = validationResult(req);
+      if (!errors.isEmpty())
+        return next(new ValidatorException({ errors: errors.array() }));
+
+      const { text, target }: { text: object; target: string } = req.body;
 
       let [translations] = await this.translateApi.translate(
-        JSON.stringify(this.payload),
-        this.target
+        JSON.stringify(text),
+        target
       );
       return res.json(JSON.parse(translations));
-    } catch {
-      next(
+      res.end();
+    } catch (err: any) {
+      return next(
         new TranslationControllerException({
-          text: JSON.stringify(req.body.payload),
+          text: JSON.stringify(req.body.text),
           target: JSON.stringify(req.body.target),
         })
       );

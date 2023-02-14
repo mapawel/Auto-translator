@@ -1,7 +1,7 @@
-import express, { Router, Request, Response, NextFunction } from 'express';
+import express, { Router } from 'express';
 import dotenvsafe from 'dotenv-safe';
 import { Application } from 'express';
-import { AppRouter } from './routes/app.router';
+import { TranslationRouter } from './routes/translation-route/translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import Middlewere404 from './middlewares/404.middleware';
 
@@ -10,7 +10,7 @@ dotenvsafe.config();
 class Server {
   private readonly port: number | string = process.env.PORT || 9000;
   private readonly app: Application = express();
-  private readonly router: Router = new AppRouter().router;
+  private readonly router: Router = new TranslationRouter().router;
 
   constructor() {
     this.app.use(express.json());
