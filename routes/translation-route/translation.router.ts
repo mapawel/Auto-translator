@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import translationController from '../../controllers/translation/translation.controller';
 import cachedTranslationController from '../../controllers/translation/Cached-translation.controller';
 import { translationValidator } from './translation-route.validator';
 

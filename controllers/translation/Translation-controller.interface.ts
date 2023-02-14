@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
 export interface ITranslationController {
-  translate: (
+  translate(
     req: Request,
     res: Response,
     next: NextFunction
-  ) => Promise<void | Response<any, Record<string, any>>>;
+  ): Promise<void | Response<any, Record<string, any>>>;
 }

@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import { v2 } from '@google-cloud/translate';
-import { TranslationControllerException } from './Translation-controller.exception';
+import { TranslationException } from './Translation.exception';
 import { validationResult, Result, ValidationError } from 'express-validator';
 import { ValidatorException } from '../../exceptions/Validator.exception';
 import { Text } from './Text.type';
 import { ITranslationController } from './Translation-controller.interface';
 
-class TranslationController implements ITranslationController {
-  private readonly translateApi: v2.Translate = new v2.Translate();
+export class TranslationController implements ITranslationController {
+  // private readonly translateApi: v2.Translate = new v2.Translate();
 
-  public translate = async (
+  public async translate(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void | Response<any, Record<string, any>>> => {
+  ): Promise<void | Response<any, Record<string, any>>> {
     try {
       const errors: Result<ValidationError> = validationResult(req);
       if (!errors.isEmpty())
@@ -21,21 +21,22 @@ class TranslationController implements ITranslationController {
 
       const { text, target }: { text: Text; target: string } = req.body;
 
-      let [translations] = await this.translateApi.translate(
-        JSON.stringify(text),
-        target
-      );
+      // const [translations] = await this.translateApi.translate(
+      //   JSON.stringify(text),
+      //   target
+      // );
 
-      return res.json(JSON.parse(translations));
+      // return res.json(JSON.parse(translations));
+      console.log('SIMPLE  ----> ', );
+      res.end()
     } catch (err: any) {
       return next(
-        new TranslationControllerException({
+        new TranslationException({
           text: JSON.stringify(req.body.text),
           target: JSON.stringify(req.body.target),
         })
       );
     }
-  };
+  }
 }
 
-export default new TranslationController();

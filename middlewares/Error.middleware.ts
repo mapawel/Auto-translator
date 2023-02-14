@@ -9,7 +9,7 @@ class ErrorMiddleware {
     res: Response,
     next: NextFunction
   ) => {
-    console.warn('>>>>>>>>> ', error, ' <<<<<<<<<<<');
+    console.error('>>>>>>>>> ', error, ' <<<<<<<<<<<');
 
     if (error instanceof ValidatorException)
       return res
