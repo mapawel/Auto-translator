@@ -7,7 +7,7 @@ export class TranslationControllerDecorator implements ITranslationController {
 
   constructor(component: TranslationController) {
     this.component = component;
-    console.log(' component in decorator constructor ----> ', this.component);
+    this.translate = this.translate.bind(this);
   }
 
   public async translate(
@@ -15,7 +15,6 @@ export class TranslationControllerDecorator implements ITranslationController {
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    console.log(' ----> Greetings from Decorator method', this.component );
     return this.component.translate(req, res, next);
   }
 }

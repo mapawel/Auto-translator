@@ -7,7 +7,7 @@ import { Text } from './Text.type';
 import { ITranslationController } from './Translation-controller.interface';
 
 export class TranslationController implements ITranslationController {
-  // private readonly translateApi: v2.Translate = new v2.Translate();
+  private readonly translateApi: v2.Translate = new v2.Translate();
 
   public async translate(
     req: Request,
@@ -21,14 +21,12 @@ export class TranslationController implements ITranslationController {
 
       const { text, target }: { text: Text; target: string } = req.body;
 
-      // const [translations] = await this.translateApi.translate(
-      //   JSON.stringify(text),
-      //   target
-      // );
+      const [translations] = await this.translateApi.translate(
+        JSON.stringify(text),
+        target
+      );
 
-      // return res.json(JSON.parse(translations));
-      console.log('SIMPLE  ----> ', );
-      res.end()
+      return res.json(JSON.parse(translations));
     } catch (err: any) {
       return next(
         new TranslationException({
@@ -39,4 +37,3 @@ export class TranslationController implements ITranslationController {
     }
   }
 }
-
