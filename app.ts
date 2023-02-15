@@ -5,7 +5,7 @@ import { TranslationRouter } from './routes/translation-route/translation.router
 import ErrorMiddleware from './middlewares/Error.middleware';
 import Middlewere404 from './middlewares/404.middleware';
 
-dotenvsafe.config();
+// dotenvsafe.config();
 
 class Server {
   private readonly port: number | string = process.env.PORT || 9000;

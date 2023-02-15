@@ -7,10 +7,11 @@ export class TranslationRouter {
   public readonly router: Router = express.Router();
 
   constructor() {
-    this.router.post(
-      '/translate',
-      translationValidator,
-      cachedTranslationController.translate
-    );
+    // this.router.post(
+    //   '/translate',
+    //   translationValidator,
+    //   cachedTranslationController.translate
+    // );
+    cachedTranslationController.translate({} as any, {} as any, () => {});
   }
 }
