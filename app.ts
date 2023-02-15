@@ -10,9 +10,11 @@ dotenvsafe.config();
 class Server {
   private readonly port: number | string = process.env.PORT || 9000;
   private readonly app: Application = express();
-  private readonly router: Router = new TranslationRouter().router;
+  private readonly router: Router = express.Router();
 
   constructor() {
+    new TranslationRouter(this.router).initTranslationRoutes();
+    
     this.app.use(express.json());
     this.app.use(this.router);
 
