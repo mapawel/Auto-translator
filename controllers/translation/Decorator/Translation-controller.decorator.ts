@@ -7,7 +7,7 @@ export class TranslationControllerDecorator implements ITranslationController {
 
   constructor(component: TranslationController) {
     this.component = component;
-    this.translate = this.translate.bind(this);
+    // this.translate = this.translate.bind(this);
   }
 
   public async translate(
