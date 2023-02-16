@@ -1,0 +1,1 @@
+[{"newsletter":{"title":"Bądź na bieżąco","ctaButton":"Idź do repo ->","action":"/new-subscriber?lang=pl"}}, {"newsletter":{"title":"Bleib informiert","ctaButton":"Zum Repo -&gt;","action":"/new-subscriber?lang=de"}}]

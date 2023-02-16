@@ -6,6 +6,7 @@ import { ValidatorException } from '../../exceptions/Validator.exception';
 import { Text } from '../types/Translation-text.type';
 import { Translation } from '../types/Translation-in-response.type';
 import { DataResponse } from '../types/Data-response.type';
+import cache from '../../Cache/Cache';
 
 class TranslationController {
   public async postTranslation(
@@ -20,11 +21,11 @@ class TranslationController {
 
       const { text, target }: { text: Text; target: string } = req.body;
       const API_KEY: string | undefined = process.env.API_KEY;
-
+      const q: string = JSON.stringify(text)
       const apiResponse = await axios.post<DataResponse>(
         `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
         {
-          q: JSON.stringify(text),
+          q,
           target,
         },
         {
@@ -34,7 +35,12 @@ class TranslationController {
         }
       );
 
-      const translatedObj: Text = this.transferDataToObj(apiResponse.data);
+      const translatedString: string = this.transferDataToString(
+        apiResponse.data
+      );
+      const translatedObj: Text = JSON.parse(translatedString);
+
+      cache.saveToCache(target, q, translatedString);
 
       return res.json(translatedObj);
     } catch (err: any) {
@@ -48,13 +54,11 @@ class TranslationController {
     }
   }
 
-  private transferDataToObj(apiDataResponse: DataResponse) {
+  private transferDataToString(apiDataResponse: DataResponse) {
     const [translatedResponse]: Translation[] =
       apiDataResponse.data.translations;
 
-    return JSON.parse(
-      translatedResponse.translatedText.replaceAll('&quot;', '"')
-    );
+    return translatedResponse.translatedText.replaceAll('&quot;', '"');
   }
 }
 export default new TranslationController();
