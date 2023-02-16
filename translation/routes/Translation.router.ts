@@ -10,7 +10,7 @@ export class TranslationRouter {
       '/translation',
       translationValidator,
       (req: Request, res: Response, next: NextFunction) =>
-        translationController.translate(req, res, next)
+        translationController.postTranslation(req, res, next)
     );
   }
 }

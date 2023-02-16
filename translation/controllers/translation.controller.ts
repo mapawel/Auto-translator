@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { v2 } from '@google-cloud/translate';
+import axios from 'axios';
 import { TranslationException } from '../exception/Translation.exception';
 import { validationResult, Result, ValidationError } from 'express-validator';
 import { ValidatorException } from '../../exceptions/Validator.exception';
-import { Text } from '../type/Translation-text.type';
+import { Text } from '../types/Translation-text.type';
+import { Translation } from '../types/Translation-in-response.type';
+import { DataResponse } from '../types/Data-response.type';
 
 class TranslationController {
-  private readonly translateApi: v2.Translate = new v2.Translate();
-
-  public async translate(
+  public async postTranslation(
     req: Request,
     res: Response,
     next: NextFunction
@@ -19,13 +19,24 @@ class TranslationController {
         return next(new ValidatorException({ errors: errors.array() }));
 
       const { text, target }: { text: Text; target: string } = req.body;
+      const API_KEY: string | undefined = process.env.API_KEY;
 
-      const [translations] = await this.translateApi.translate(
-        JSON.stringify(text),
-        target
+      const apiResponse = await axios.post<DataResponse>(
+        `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
+        {
+          q: JSON.stringify(text),
+          target,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        }
       );
 
-      return res.json(JSON.parse(translations));
+      const translatedObj: Text = this.transferDataToObj(apiResponse.data);
+
+      return res.json(translatedObj);
     } catch (err: any) {
       return next(
         new TranslationException({
@@ -35,6 +46,15 @@ class TranslationController {
         })
       );
     }
+  }
+
+  private transferDataToObj(apiDataResponse: DataResponse) {
+    const [translatedResponse]: Translation[] =
+      apiDataResponse.data.translations;
+
+    return JSON.parse(
+      translatedResponse.translatedText.replaceAll('&quot;', '"')
+    );
   }
 }
 export default new TranslationController();
