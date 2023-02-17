@@ -1,6 +1,7 @@
 import { writeFile, readFile, stat } from 'fs/promises';
 import path from 'path';
 import { Text } from '../translation/types/Translation-text.type';
+import { CacheException } from './exception/Cache.exception';
 
 class Cache {
   public async saveToCache(target: string, key: Text, data: Text) {
@@ -14,9 +15,8 @@ class Cache {
         this.filenameWhPath(target),
         JSON.stringify(Array.from(map.entries()))
       );
-    } catch (err) {
-      console.log('cache save error ----> ', err);
-      throw err;
+    } catch (err: any) {
+      throw new CacheException({ err });
     }
   }
 
@@ -30,8 +30,8 @@ class Cache {
       if (!fullCacheMap) return undefined;
 
       return fullCacheMap.get(JSON.stringify(key));
-    } catch (err) {
-      console.log('error in find in cache ----> ', err);
+    } catch (err: any) {
+      throw new CacheException({ err });
     }
   }
 
@@ -49,9 +49,8 @@ class Cache {
       });
 
       return new Map(JSON.parse(content));
-    } catch (err) {
-      console.log('cache load error ----> ', err);
-      throw err;
+    } catch (err: any) {
+      throw new CacheException({ err });
     }
   }
 

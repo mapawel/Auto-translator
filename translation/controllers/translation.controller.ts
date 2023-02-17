@@ -22,12 +22,6 @@ class TranslationController {
       const { text, target }: { text: Text; target: string } = req.body;
       const API_KEY: string | undefined = process.env.API_KEY;
 
-      const foundInCache: Text | undefined = await cache.findInCache(
-        target,
-        text
-      );
-      if (foundInCache) return res.json(foundInCache);
-
       const q: string = JSON.stringify(text);
       const apiResponse = await axios.post<DataResponse>(
         `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
@@ -55,7 +49,10 @@ class TranslationController {
         new TranslationException({
           text: JSON.stringify(req.body.text),
           target: JSON.stringify(req.body.target),
-          err: JSON.stringify(err),
+          sourceMessage: err.message,
+          err: err.errorPayload?.err
+            ? JSON.stringify(err.errorPayload.err)
+            : JSON.stringify(err),
         })
       );
     }
