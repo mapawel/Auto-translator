@@ -6,7 +6,7 @@ import { ValidatorException } from '../../exceptions/Validator.exception';
 import { Text } from '../types/Translation-text.type';
 import { Translation } from '../types/Translation-in-response.type';
 import { DataResponse } from '../types/Data-response.type';
-import cache from '../../Cache/Cache';
+import cache from '../../cache/Cache';
 
 class TranslationController {
   public async postTranslation(
@@ -20,9 +20,11 @@ class TranslationController {
         return next(new ValidatorException({ errors: errors.array() }));
 
       const { text, target }: { text: Text; target: string } = req.body;
+
       const API_KEY: string | undefined = process.env.API_KEY;
 
       const q: string = JSON.stringify(text);
+
       const apiResponse = await axios.post<DataResponse>(
         `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
         {
@@ -41,7 +43,7 @@ class TranslationController {
       );
       const translatedObj: Text = JSON.parse(translatedString);
 
-      cache.saveToCache(target, text, translatedObj);
+      await cache.saveToCache(target, text, translatedObj);
 
       return res.json(translatedObj);
     } catch (err: any) {
