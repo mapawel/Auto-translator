@@ -1,6 +1,6 @@
 import assert from 'assert';
 import express from 'express';
-import axios from 'axios';
+import request, { Response } from 'supertest';
 import http from 'http';
 import { Setup } from './setup';
 import { TranslationRouter } from '../routes/Translation.router';
@@ -29,15 +29,14 @@ describe('Translation router + validator + cache + controller test suite:', () =
 
   it('should return status 200 and translated data on POST, route /translation with correct body data', async () => {
     try {
-      //when
-      const response = await axios.post(
-        `${setup.baseUrl}:${setup.port}${setup.route}`,
-        setup.sampleRequest
-      );
+      const response: Response = await request(server)
+        .post(setup.route as string)
+        .send(setup.sampleRequest)
+        .expect('Content-Type', /json/);
 
-      //then
-      assert.equal(response.status, 200);
-      assert.deepEqual(response.data, setup.sampleResponse);
+      // then
+      assert.equal(response.statusCode, 200);
+      assert.deepEqual(response.body, setup.sampleResponse);
     } catch (err: any) {
       throw err;
     }
