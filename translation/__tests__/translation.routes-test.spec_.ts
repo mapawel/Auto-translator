@@ -1,35 +1,48 @@
 import http from 'http';
-import express from 'express';
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import assert from 'assert';
-import request, { Response } from 'supertest';
+import sinonChai from 'sinon-chai';
 import sinon from 'sinon';
+import request, { Response } from 'supertest';
 import { Setup } from './setup';
 import { TranslationRouter } from '../routes/Translation.router';
-import translationController from '../controllers/translation.controller';
-import cacheMiddleware from '../../middlewares/Cache.middleware';
+import express, {
+  NextFunction,
+  Router,
+  Request as ERequest,
+  Response as EResponse,
+} from 'express';
+chai.use(sinonChai);
 
 describe('Translation router test suite:', () => {
   let setup: Setup;
   let server: http.Server;
-  let test: any
+  let router: Router;
+
+  const controllerStubFn = (
+    req: ERequest,
+    res: EResponse,
+    next: NextFunction
+  ) => {
+    return res.json({ text: 'Hello, world!' });
+  };
+
   beforeEach(() => {
     setup = new Setup();
-    const router = express.Router();
-    new TranslationRouter(router).initTranslationRoutes();
+
+    router = express.Router();
+    TranslationRouter.initTranslationRoutes(router, controllerStubFn);
+
     server = setup.initServerWithRouter(
       'http://localhost',
       8000,
       '/translation',
       router
     );
-
-    // sinon.stub(cacheMiddleware, 'findInCache'); // ?????????????????
   });
 
   afterEach(() => {
     server.close();
-    sinon.restore();
   });
 
   it('should return status 200 and translated data on POST, route /translation with correct body data', async () => {
@@ -39,10 +52,8 @@ describe('Translation router test suite:', () => {
         .send(setup.sampleRequest)
         .expect('Content-Type', /json/);
 
-      // then
-      console.log(' ----> ?????????????????????', response.body);
-      // assert.equal(response.statusCode, 200);
-      // assert.deepEqual(response.body, setup.sampleResponse);
+      assert.equal(response.status, 200);
+      assert.deepEqual(response.body, { text: 'Hello, world!' });
     } catch (err: any) {
       throw err;
     }

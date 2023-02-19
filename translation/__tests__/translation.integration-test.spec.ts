@@ -4,15 +4,19 @@ import request, { Response } from 'supertest';
 import http from 'http';
 import { Setup } from './setup';
 import { TranslationRouter } from '../routes/Translation.router';
+import translationController from '../controllers/translation.controller';
 
-describe('Translation router + validator + cache + controller test suite:', () => {
+describe('Translation router + validator + cache:', () => {
   let setup: Setup;
   let server: http.Server;
 
   beforeEach(() => {
     setup = new Setup();
     const router = express.Router();
-    new TranslationRouter(router).initTranslationRoutes();
+    TranslationRouter.initTranslationRoutes(
+      router,
+      translationController.postTranslation.bind(translationController)
+    );
     server = setup.initServerWithRouter(
       'http://localhost',
       8000,

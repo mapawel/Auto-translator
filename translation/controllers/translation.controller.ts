@@ -15,8 +15,6 @@ class TranslationController {
     next: NextFunction
   ): Promise<void | Response<Text>> {
     try {
-    return res.status(200).json({test: 'test'})
-
       const errors: Result<ValidationError> = validationResult(req);
       if (!errors.isEmpty())
         return next(new ValidatorException({ errors: errors.array() }));

@@ -4,6 +4,7 @@ import { Application } from 'express';
 import { TranslationRouter } from './translation/routes/Translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import NotFoundMiddlewere from './middlewares/NotFound.middleware';
+import translationController from './translation/controllers/translation.controller';
 
 dotenvsafe.config();
 
@@ -13,8 +14,11 @@ class Server {
   private readonly router: Router = express.Router();
 
   constructor() {
-    new TranslationRouter(this.router).initTranslationRoutes();
-    
+    TranslationRouter.initTranslationRoutes(
+      this.router,
+      translationController.postTranslation.bind(translationController)
+    );
+
     this.app.use(express.json());
     this.app.use(this.router);
 

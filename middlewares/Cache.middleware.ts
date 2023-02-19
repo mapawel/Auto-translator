@@ -5,11 +5,8 @@ import cache from '../cache/Cache';
 import { Text } from '../translation/types/Translation-text.type';
 
 class CacheMiddleware {
-  constructor(){
-    console.log(' ----> ', Math.random() * 10);
-  }
+  constructor() {}
   findInCache = async (req: Request, res: Response, next: NextFunction) => {
-    console.log('GO ----> ' );
     const errors: Result<ValidationError> = validationResult(req);
     if (!errors.isEmpty())
       return next(new ValidatorException({ errors: errors.array() }));

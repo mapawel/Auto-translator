@@ -1,6 +1,12 @@
 import dotenvsafe from 'dotenv-safe';
 import http = require('http');
-import express, { Request, Response, NextFunction, Router } from 'express';
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  Router,
+  Application,
+} from 'express';
 import nock, { Scope } from 'nock';
 import { DataResponse } from '../types/Data-response.type';
 import { Text } from '../types/Translation-text.type';
@@ -44,6 +50,18 @@ export class Setup {
     dotenvsafe.config();
   }
 
+  get route(): string | undefined {
+    return this._route;
+  }
+
+  get baseUrl(): string | undefined {
+    return this._baseUrl;
+  }
+
+  get port(): number | undefined {
+    return this._port;
+  }
+
   public initServerWithRouter(
     baseUrl: string,
     port: number,
@@ -79,18 +97,6 @@ export class Setup {
     app.post(route, controllerMethod);
 
     return http.createServer(app).listen(this._port);
-  }
-
-  get route(): string | undefined {
-    return this._route;
-  }
-
-  get baseUrl(): string | undefined {
-    return this._baseUrl;
-  }
-
-  get port(): number | undefined {
-    return this._port;
   }
 
   public initMockGoogleApi(): void {
