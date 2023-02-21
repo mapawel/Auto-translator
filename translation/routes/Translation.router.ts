@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { translationValidator } from '../validator/translation.validator';
-import { TranslationController } from '../controllers/translation-controller';
+import { TranslationController } from '../controller/translation-controller';
 import { CacheMiddleware } from '../../middlewares/Cache.middleware';
 
 export class TranslationRouter {

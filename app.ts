@@ -6,7 +6,7 @@ import { TranslationRouter } from './translation/routes/Translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import NotFoundMiddlewere from './middlewares/NotFound.middleware';
 import { TranslationService } from './translation/service/Translation-service';
-import { TranslationController } from './translation/controllers/translation-controller';
+import { TranslationController } from './translation/controller/translation-controller';
 import { FileCacheService } from './cache/File-cache-service';
 import { Cache } from './cache/Cache';
 import { CacheMiddleware } from './middlewares/Cache.middleware';

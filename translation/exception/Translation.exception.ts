@@ -9,6 +9,6 @@ export class TranslationException extends HttpException {
       err: string;
     }
   ) {
-    super(`Server error on try to translate.${JSON.stringify(errorPayload.err)}`, 500);
+    super(`Server error on try to translate.`, 500);
   }
 }
