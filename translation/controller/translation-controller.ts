@@ -24,7 +24,7 @@ export class TranslationController {
       const { text, target }: { text: TranslationText; target: string } =
         req.body;
 
-      const translatedObj = await this.translationService.translate(
+      const translatedObj:TranslationText = await this.translationService.translate(
         text,
         target
       );

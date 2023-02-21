@@ -9,14 +9,20 @@ import express, {
 } from 'express';
 import nock, { Scope } from 'nock';
 import { APIdataResponse } from '../../translation/types/Data.models';
-import { TranslationText } from 'translation/types/Translation-text.type';
+import { TranslationText } from '../../translation/types/Translation-text.type';
+import { Cache } from '../../cache/Cache';
+import { FakeCache } from './Fake-cache-service.setup';
 
 export class Setup {
   private _baseUrl: string | undefined;
   private _port: number | undefined;
   private _route: string | undefined;
 
-  public readonly sampleRequest = {
+  public readonly fakeCacheService = new FakeCache();
+
+  public readonly fakeCache = new Cache(this.fakeCacheService);
+
+  public readonly sampleRequest: { text: TranslationText; target: string } = {
     text: {
       newsletter: {
         title: 'Bądź na bieżąco 32222',
