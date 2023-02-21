@@ -6,8 +6,10 @@ import { TranslationRouter } from './translation/routes/Translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import NotFoundMiddlewere from './middlewares/NotFound.middleware';
 import { TranslationService } from './translation/service/Translation-service';
+import { TranslationController } from './translation/controllers/translation-controller';
 import { FileCacheService } from './cache/File-cache-service';
 import { Cache } from './cache/Cache';
+import { CacheMiddleware } from './middlewares/Cache.middleware';
 
 dotenvsafe.config();
 
@@ -17,13 +19,17 @@ class Server {
   private readonly app: Application = express();
   private readonly router: Router = express.Router();
   private readonly cache: Cache = new Cache(new FileCacheService());
+  private readonly cacheMiddleware: CacheMiddleware = new CacheMiddleware(
+    this.cache
+  );
+  private readonly translationController: TranslationController =
+    new TranslationController(this.cache, new TranslationService());
 
   constructor() {
-    const translationService = new TranslationService(this.cache);
     const tranlsationRouter = new TranslationRouter(
       this.router,
-      this.cache,
-      translationService
+      this.cacheMiddleware,
+      this.translationController
     );
     tranlsationRouter.initTranslationRoutes();
 
