@@ -1,66 +1,34 @@
-import { writeFile, readFile, stat } from 'fs/promises';
-import path from 'path';
 import { Text } from '../translation/types/Translation-text.type';
-import { CacheException } from './exception/Cache.exception';
+import { IcacheService } from './interface/cache-service.interface';
 
-class Cache {
-  public async saveToCache(target: string, key: Text, data: Text) {
-    try {
-      const prevData: Map<string, Text> | null = await this.loadFullCacheAsMap(
-        target
-      );
-      const map = prevData || new Map();
-      map.set(JSON.stringify(key), data);
-      await writeFile(
-        this.filenameWhPath(target),
-        JSON.stringify(Array.from(map.entries()))
-      );
-    } catch (err: any) {
-      throw new CacheException({ err });
-    }
+export class Cache {
+  constructor(private readonly cacheService: IcacheService) {}
+
+  public async readOne(target: string, key: Text): Promise<Text | undefined> {
+    return this.cacheService.readOne(target, key);
   }
 
-  public async findInCache(
+  public async saveOne(
     target: string,
-    key: Text
-  ): Promise<Text | undefined> {
-    try {
-      const fullCacheMap: Map<string, Text> | null =
-        await this.loadFullCacheAsMap(target);
-      if (!fullCacheMap) return undefined;
-
-      return fullCacheMap.get(JSON.stringify(key));
-    } catch (err: any) {
-      throw new CacheException({ err });
-    }
+    key: Text,
+    data: Text
+  ): Promise<boolean> {
+    return this.cacheService.saveOne(target, key, data);
   }
 
-  private async loadFullCacheAsMap(
-    target: string
-  ): Promise<Map<string, Text> | null> {
-    try {
-      const isFileAlready: boolean = await this.isFile(
-        this.filenameWhPath(target)
-      );
-      if (!isFileAlready) return null;
-
-      const content = await readFile(this.filenameWhPath(target), {
-        encoding: 'utf-8',
-      });
-
-      return new Map(JSON.parse(content));
-    } catch (err: any) {
-      throw new CacheException({ err });
-    }
+  public async removeOne(target: string, key: Text): Promise<boolean> {
+    return this.cacheService.removeOne(target, key);
   }
 
-  private async isFile(path: string): Promise<boolean> {
-    return !!(await stat(path).catch(() => false));
+  public async readAll(target: string): Promise<Map<string, Text> | null> {
+    return this.cacheService.readAll(target);
   }
 
-  private filenameWhPath(name: string): string {
-    return `${path.join(process.cwd(), 'data', 'cache', name)}.txt`;
+  public async removeAll(target: string): Promise<boolean> {
+    return this.cacheService.removeAll(target);
+  }
+
+  public async clearCache(): Promise<boolean> {
+    return this.cacheService.clearCache();
   }
 }
-
-export default new Cache();

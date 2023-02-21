@@ -1,34 +1,53 @@
+import http from 'http';
 import express, { Router } from 'express';
 import dotenvsafe from 'dotenv-safe';
 import { Application } from 'express';
 import { TranslationRouter } from './translation/routes/Translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import NotFoundMiddlewere from './middlewares/NotFound.middleware';
-import translationController from './translation/controllers/translation.controller';
+import { TranslationService } from './translation/service/Translation-service';
+import { FileCacheService } from './cache/File-cache-service';
+import { Cache } from './cache/Cache';
 
 dotenvsafe.config();
 
 class Server {
+  private server: http.Server | undefined;
   private readonly port: number | string = process.env.PORT || 9000;
   private readonly app: Application = express();
   private readonly router: Router = express.Router();
+  private readonly cache: Cache = new Cache(new FileCacheService());
 
   constructor() {
-    TranslationRouter.initTranslationRoutes(
+    const translationService = new TranslationService(this.cache);
+    const tranlsationRouter = new TranslationRouter(
       this.router,
-      translationController.postTranslation.bind(translationController)
+      this.cache,
+      translationService
     );
+    tranlsationRouter.initTranslationRoutes();
 
     this.app.use(express.json());
     this.app.use(this.router);
 
     this.app.use(NotFoundMiddlewere.throw);
     this.app.use(ErrorMiddleware.throw);
+  }
 
-    this.app.listen(this.port, () => {
+  public startServer(): http.Server {
+    this.server = http.createServer(this.app).listen(this.port, () => {
       console.log(`App is listening on port ${this.port}`);
+    });
+    return this.server;
+  }
+
+  public stopServer(): true | void {
+    this.server?.close((err: any) => {
+      if (err) throw new Error(err);
+      return true;
     });
   }
 }
 
-new Server();
+const appServer: Server = new Server();
+appServer.startServer();

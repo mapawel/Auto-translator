@@ -6,9 +6,16 @@ import { ValidatorException } from '../../exceptions/Validator.exception';
 import { Text } from '../types/Translation-text.type';
 import { Translation } from '../types/Translation-in-response.type';
 import { DataResponse } from '../types/Data-response.type';
-import cache from '../../cache/Cache';
+import { Cache } from '../../cache/Cache';
+import { IcacheService } from 'cache/interface/cache-service.interface';
 
-class TranslationController {
+export class TranslationService {
+  constructor(private readonly cache: Cache) {}
+
+  private async saveInCache(target: string, text: Text, translatedObj: Text) {
+    await this.cache.saveOne(target, text, translatedObj);
+  }
+
   public async postTranslation(
     req: Request,
     res: Response,
@@ -43,7 +50,7 @@ class TranslationController {
       );
       const translatedObj: Text = JSON.parse(translatedString);
 
-      await cache.saveToCache(target, text, translatedObj);
+      await this.saveInCache(target, text, translatedObj);
 
       return res.json(translatedObj);
     } catch (err: any) {
@@ -67,4 +74,3 @@ class TranslationController {
     return translatedResponse.translatedText.replaceAll('&quot;', '"');
   }
 }
-export default new TranslationController();

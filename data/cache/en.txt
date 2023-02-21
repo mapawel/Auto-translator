@@ -1,0 +1,1 @@
+[["{\"newsletter\":{\"title\":\"Bądź na bieżąco 8888\",\"ctaButton\":\"Idź do repo ->\",\"action\":\"/new-subscriber?lang=pl\"}}",{"newsletter":{"title":"Stay tuned 8888","ctaButton":"Go to repo -&gt;","action":"/new-subscriber?lang=en"}}]]
