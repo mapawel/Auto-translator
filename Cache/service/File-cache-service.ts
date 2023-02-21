@@ -1,7 +1,7 @@
 import { writeFile, readFile, stat } from 'fs/promises';
 import path from 'path';
-import { Text } from '../translation/types/Translation-text.type';
-import { IcacheService } from './interface/cache-service.interface';
+import { Text } from '../../translation/types/Translation-text.type';
+import { IcacheService } from '../interface/cache-service.interface';
 
 export class FileCacheService implements IcacheService {
   public async readOne(target: string, key: Text): Promise<Text | undefined> {
@@ -34,10 +34,10 @@ export class FileCacheService implements IcacheService {
   }
 
   public async readAll(target: string): Promise<Map<string, Text> | null> {
-    // const isFileAlready: boolean = await this.isFile(
-    //   this.filenameWhPath(target)
-    // );
-    // if (!isFileAlready) return null;
+    const isFileAlready: boolean = await this.isFile(
+      this.filenameWhPath(target)
+    );
+    if (!isFileAlready) return null;
 
     const content = await readFile(this.filenameWhPath(target), {
       encoding: 'utf-8',
