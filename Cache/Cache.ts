@@ -1,31 +1,29 @@
-import { Text } from '../translation/types/Translation-text.type';
+import { TranslationText } from '../translation/types/Translation-text.type';
 import { IcacheService } from './interface/cache-service.interface';
 
 export class Cache {
   constructor(private readonly cacheService: IcacheService) {}
 
-  public async readOne(target: string, key: Text): Promise<Text | undefined> {
-    return this.cacheService.readOne(target, key);
+  public async readOne(
+    target: string,
+    key: TranslationText
+  ): Promise<TranslationText | undefined> {
+    return this.cacheService.read(target, key);
   }
 
   public async saveOne(
     target: string,
-    key: Text,
-    data: Text
+    key: TranslationText,
+    data: TranslationText
   ): Promise<boolean> {
-    return this.cacheService.saveOne(target, key, data);
+    return this.cacheService.save(target, key, data);
   }
 
-  public async removeOne(target: string, key: Text): Promise<boolean> {
-    return this.cacheService.removeOne(target, key);
-  }
-
-  public async readAll(target: string): Promise<Map<string, Text> | null> {
-    return this.cacheService.readAll(target);
-  }
-
-  public async removeAll(target: string): Promise<boolean> {
-    return this.cacheService.removeAll(target);
+  public async removeOne(
+    target: string,
+    key: TranslationText
+  ): Promise<boolean> {
+    return this.cacheService.remove(target, key);
   }
 
   public async clearCache(): Promise<boolean> {

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { TranslationException } from '../exception/Translation.exception';
 import { validationResult, Result, ValidationError } from 'express-validator';
 import { ValidatorException } from '../../exceptions/Validator.exception';
-import { Text } from '../types/Translation-text.type';
+import { TranslationText } from '../../translation/types/Translation-text.type';
 import { Cache } from '../../cache/Cache';
 import { ItranslationService } from '../interface/Translation-service.interface';
 
@@ -11,17 +11,18 @@ export class TranslationController {
     private readonly cache: Cache,
     private readonly translationService: ItranslationService
   ) {}
-  public postTranslation = async (
+  public async postTranslation(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void | Response<Text>> => {
+  ): Promise<void | Response<TranslationText>> {
     try {
       const errors: Result<ValidationError> = validationResult(req);
       if (!errors.isEmpty())
         return next(new ValidatorException({ errors: errors.array() }));
 
-      const { text, target }: { text: Text; target: string } = req.body;
+      const { text, target }: { text: TranslationText; target: string } =
+        req.body;
 
       const translatedObj = await this.translationService.translate(
         text,
@@ -43,9 +44,13 @@ export class TranslationController {
         })
       );
     }
-  };
+  }
 
-  private async saveInCache(target: string, text: Text, translatedObj: Text) {
+  private async saveInCache(
+    target: string,
+    text: TranslationText,
+    translatedObj: TranslationText
+  ) {
     await this.cache.saveOne(target, text, translatedObj);
   }
 }

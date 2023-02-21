@@ -9,7 +9,7 @@ import { TranslationService } from './translation/service/Translation-service';
 import { TranslationController } from './translation/controller/translation-controller';
 import { FileCacheService } from './cache/service/File-cache-service';
 import { Cache } from './cache/Cache';
-import { CacheMiddleware } from './middlewares/Cache.middleware';
+import { CacheMiddleware } from './cache/middleware/Cache.middleware';
 
 dotenvsafe.config();
 

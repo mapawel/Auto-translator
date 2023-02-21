@@ -1,10 +1,8 @@
-import { Text } from '../../translation/types/Translation-text.type';
+import { TranslationText } from "../../translation/types/Translation-text.type";
 
 export interface IcacheService {
-  readOne(target: string, key: Text): Promise<Text | undefined>;
-  saveOne(target: string, key: Text, data: Text): Promise<boolean>;
-  removeOne(target: string, key: Text): Promise<boolean>;
-  readAll(target: string): Promise<Map<string, Text> | null>;
-  removeAll(target: string): Promise<boolean>;
+  read(target: string, key: TranslationText): Promise<TranslationText | undefined>;
+  save(target: string, key: TranslationText, data: TranslationText): Promise<boolean>;
+  remove(target: string, key: TranslationText): Promise<boolean>;
   clearCache(): Promise<boolean>;
 }

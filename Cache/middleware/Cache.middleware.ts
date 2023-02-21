@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, Result, ValidationError } from 'express-validator';
-import { ValidatorException } from '../exceptions/Validator.exception';
-import { Cache } from '../cache/Cache';
-import { Text } from '../translation/types/Translation-text.type';
-import { CacheException } from '../cache/exception/Cache.exception';
+import { ValidatorException } from '../../exceptions/Validator.exception';
+import { Cache } from '../Cache';
+import { TranslationText } from '../../translation/types/Translation-text.type';
+import { CacheException } from '../exception/Cache.exception';
 
 export class CacheMiddleware {
   private readonly cache: Cache;
@@ -17,12 +17,11 @@ export class CacheMiddleware {
       if (!errors.isEmpty())
         return next(new ValidatorException({ errors: errors.array() }));
 
-      const { text, target }: { text: Text; target: string } = req.body;
+      const { text, target }: { text: TranslationText; target: string } =
+        req.body;
 
-      const foundInCache: Text | undefined = await this.cache.readOne(
-        target,
-        text
-      );
+      const foundInCache: TranslationText | undefined =
+        await this.cache.readOne(target, text);
       if (foundInCache) return res.json(foundInCache);
       next();
     } catch (err: any) {

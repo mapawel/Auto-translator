@@ -8,8 +8,8 @@ import express, {
   Application,
 } from 'express';
 import nock, { Scope } from 'nock';
-import { DataResponse } from '../types/Data-response.type';
-import { Text } from '../types/Translation-text.type';
+import { APIdataResponse } from '../../translation/types/Data.models';
+import { TranslationText } from 'translation/types/Translation-text.type';
 
 export class Setup {
   private _baseUrl: string | undefined;
@@ -35,7 +35,7 @@ export class Setup {
     },
   };
 
-  public readonly apiResponse: DataResponse = {
+  public readonly apiResponse: APIdataResponse = {
     data: {
       translations: [
         {
@@ -87,7 +87,7 @@ export class Setup {
       req: Request,
       res: Response,
       next: NextFunction
-    ) => Promise<void | Response<Text>>
+    ) => Promise<void | Response<TranslationText>>
   ): http.Server {
     this._baseUrl = baseUrl;
     this._port = port;

@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express';
 import { Router } from 'express';
 import { translationValidator } from '../validator/translation.validator';
 import { TranslationController } from '../controller/translation-controller';
-import { CacheMiddleware } from '../../middlewares/Cache.middleware';
+import { CacheMiddleware } from '../../cache/middleware/Cache.middleware';
 
 export class TranslationRouter {
   constructor(
@@ -15,7 +16,9 @@ export class TranslationRouter {
       '/translation',
       translationValidator,
       this.cacheMiddleware.findInCache,
-      this.translationController.postTranslation
+      (req: Request, res: Response, next: NextFunction) => {
+        this.translationController.postTranslation(req, res, next);
+      }
     );
   }
 }
