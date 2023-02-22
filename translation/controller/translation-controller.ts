@@ -24,10 +24,8 @@ export class TranslationController {
       const { text, target }: { text: TranslationText; target: string } =
         req.body;
 
-      const translatedObj:TranslationText = await this.translationService.translate(
-        text,
-        target
-      );
+      const translatedObj: TranslationText =
+        await this.translationService.translate(text, target);
 
       await this.saveInCache(target, text, translatedObj);
 

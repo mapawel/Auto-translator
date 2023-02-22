@@ -8,8 +8,8 @@ import express, {
   Application,
 } from 'express';
 import nock, { Scope } from 'nock';
-import { APIdataResponse } from '../../translation/types/Data.models';
-import { TranslationText } from '../../translation/types/Translation-text.type';
+import { APIdataResponse } from '../types/Data.models';
+import { TranslationText } from '../types/Translation-text.type';
 import { Cache } from '../../cache/Cache';
 import { FakeCache } from './Fake-cache-service.setup';
 
