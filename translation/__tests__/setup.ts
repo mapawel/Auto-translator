@@ -5,7 +5,6 @@ import express, {
   Response,
   NextFunction,
   Router,
-  Application,
 } from 'express';
 import nock, { Scope } from 'nock';
 import { APIdataResponse } from '../types/Data.models';
@@ -31,6 +30,17 @@ export class Setup {
       },
     },
     target: 'de',
+  };
+
+  public readonly sampleBadRequest: { text: TranslationText; target: string } = {
+    text: {
+      newsletter: {
+        title: 'Bądź na bieżąco 32222',
+        ctaButton: 'Idź do repo ->',
+        action: '/new-subscriber?lang=pl',
+      },
+    },
+    target: 'qq',
   };
 
   public readonly sampleResponse = {
@@ -115,5 +125,12 @@ export class Setup {
         target: this.sampleRequest.target,
       })
       .reply(200, this.apiResponse);
+
+      nocServerWhPath
+      .post(`/language/translate/v2?key=${API_KEY}`, {
+        q: JSON.stringify(this.sampleBadRequest.text),
+        target: this.sampleBadRequest.target,
+      })
+      .replyWithError('Request failed with status code 400');
   }
 }

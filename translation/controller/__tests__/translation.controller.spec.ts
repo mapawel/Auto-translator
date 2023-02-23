@@ -1,7 +1,7 @@
 import assert from 'assert';
 import mock, { MockRequest, MockResponse } from 'node-mocks-http';
 import { Request, Response } from 'express';
-import { TranslationController } from '../translation-controller';
+import { TranslationController } from '../translation.controller';
 import { Setup } from '../../__tests__/setup';
 import { TranslationService } from '../../service/Translation-service';
 import { Cache } from '../../../cache/Cache';
@@ -18,93 +18,105 @@ describe('Translation controller test suite:', () => {
   });
 
   it('should return status 200 and translated data from method postTranslation() using translation service, not-cache.', async () => {
-    try {
-      //given
-      const cache: Cache = setup.fakeCache;
-      const translationService: TranslationService = new TranslationService();
-      const translationController = new TranslationController(
-        cache,
-        translationService
-      );
+    //given
+    const cache: Cache = setup.fakeCache;
+    const translationService: TranslationService = new TranslationService();
+    const translationController = new TranslationController(
+      cache,
+      translationService
+    );
 
-      const request: MockRequest<Request> = mock.createRequest({
-        body: setup.sampleRequest,
-      });
-      const response: MockResponse<Response> = mock.createResponse();
+    const request: MockRequest<Request> = mock.createRequest({
+      body: setup.sampleRequest,
+    });
+    const response: MockResponse<Response> = mock.createResponse();
 
-      //when
-      await translationController.postTranslation(request, response, () => {});
+    //when
+    await translationController.postTranslation(request, response, () => {});
 
-      //then
-      const controllerResData = JSON.parse(response._getData());
+    //then
+    const controllerResData = JSON.parse(response._getData());
 
-      assert.equal(response.statusCode, 200);
-      assert.deepEqual(controllerResData, setup.sampleResponse);
-    } catch (err: any) {
-      throw err;
-    }
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(controllerResData, setup.sampleResponse);
   });
 
   it('should save translated data in file-cache and then return them.', async () => {
-    try {
-      //given
-      const cache: Cache = new Cache(new FileCacheService());
-      const translationService: TranslationService = new TranslationService();
-      const translationController = new TranslationController(
-        cache,
-        translationService
-      );
+    //given
+    const cache: Cache = new Cache(new FileCacheService());
+    const translationService: TranslationService = new TranslationService();
+    const translationController = new TranslationController(
+      cache,
+      translationService
+    );
 
-      const cacheSaveSpy = sinon.spy(cache, 'saveOne');
+    const cacheSaveSpy = sinon.spy(cache, 'saveOne');
 
-      const request: MockRequest<Request> = mock.createRequest({
-        body: setup.sampleRequest,
-      });
-      const response: MockResponse<Response> = mock.createResponse();
+    const request: MockRequest<Request> = mock.createRequest({
+      body: setup.sampleRequest,
+    });
+    const response: MockResponse<Response> = mock.createResponse();
 
-      //when
-      await translationController.postTranslation(request, response, () => {});
+    //when
+    await translationController.postTranslation(request, response, () => {});
 
-      //then
-      const controllerResData = JSON.parse(response._getData());
-      const cachedData = await cache.readOne(
-        setup.sampleRequest.target,
-        setup.sampleRequest.text
-      );
+    //then
+    const controllerResData = JSON.parse(response._getData());
+    const cachedData = await cache.readOne(
+      setup.sampleRequest.target,
+      setup.sampleRequest.text
+    );
 
-      sinon.assert.calledOnce(cacheSaveSpy);
-      assert.deepEqual(cachedData, setup.sampleResponse);
+    sinon.assert.calledOnce(cacheSaveSpy);
+    assert.deepEqual(cachedData, setup.sampleResponse);
 
-      assert.equal(response.statusCode, 200);
-      assert.deepEqual(controllerResData, setup.sampleResponse);
-    } catch (err: any) {
-      throw err;
-    }
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(controllerResData, setup.sampleResponse);
+
+    cache.clearCache();
   });
 
-  it('should catch a translation service error coused by passing wrong param to API request', async () => {
-    try {
-      //given
-      const cache: Cache = setup.fakeCache;
-      const translationService: TranslationService = new TranslationService();
-      const translationController = new TranslationController(
-        cache,
-        translationService
-      );
+  it('should catch a translation-service error coused by passing wrong param to API request', async () => {
+    //given
+    const cache: Cache = setup.fakeCache;
+    const translationService: TranslationService = new TranslationService();
+    const translationController = new TranslationController(
+      cache,
+      translationService
+    );
 
-      const request: MockRequest<Request> = mock.createRequest({
-        body: { ...setup.sampleRequest, target: 'non-existing' },
-      });
-      const response: MockResponse<Response> = mock.createResponse();
-      const next = sinon.spy();
+    const request: MockRequest<Request> = mock.createRequest({
+      body: { ...setup.sampleRequest, target: 'non-existing' },
+    });
+    const response: MockResponse<Response> = mock.createResponse();
+    const next = sinon.spy();
 
-      //when
-      await translationController.postTranslation(request, response, next);
+    //when
+    await translationController.postTranslation(request, response, next);
 
-      //then
-      sinon.assert.calledOnce(next);
-    } catch (err: any) {
-      throw err;
-    }
+    //then
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should catch a validator error coused by passing wrong body to request', async () => {
+    //given
+    const cache: Cache = setup.fakeCache;
+    const translationService: TranslationService = new TranslationService();
+    const translationController = new TranslationController(
+      cache,
+      translationService
+    );
+
+    const request: MockRequest<Request> = mock.createRequest({
+      body: { wrong: 'body' },
+    });
+    const response: MockResponse<Response> = mock.createResponse();
+    const next = sinon.spy();
+
+    //when
+    await translationController.postTranslation(request, response, next);
+
+    //then
+    sinon.assert.calledOnce(next);
   });
 });

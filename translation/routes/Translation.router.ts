@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Router } from 'express';
 import { translationValidator } from '../validator/translation.validator';
-import { TranslationController } from '../controller/translation-controller';
+import { TranslationController } from '../controller/translation.controller';
 import { CacheMiddleware } from '../../cache/middleware/Cache.middleware';
 
 export class TranslationRouter {

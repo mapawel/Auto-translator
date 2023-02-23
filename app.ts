@@ -6,26 +6,28 @@ import { TranslationRouter } from './translation/routes/Translation.router';
 import ErrorMiddleware from './middlewares/Error.middleware';
 import NotFoundMiddlewere from './middlewares/NotFound.middleware';
 import { TranslationService } from './translation/service/Translation-service';
-import { TranslationController } from './translation/controller/translation-controller';
+import { TranslationController } from './translation/controller/translation.controller';
 import { FileCacheService } from './cache/service/File-cache-service';
 import { Cache } from './cache/Cache';
 import { CacheMiddleware } from './cache/middleware/Cache.middleware';
 
 dotenvsafe.config();
 
-class Server {
+export class Server {
   private server: http.Server | undefined;
-  private readonly port: number | string = process.env.PORT || 9000;
+  private readonly port: number | string;
   private readonly app: Application = express();
   private readonly router: Router = express.Router();
-  private readonly cache: Cache = new Cache(new FileCacheService());
+  readonly cache: Cache = new Cache(new FileCacheService());
   private readonly cacheMiddleware: CacheMiddleware = new CacheMiddleware(
     this.cache
   );
+  readonly translationService: TranslationService = new TranslationService();
   private readonly translationController: TranslationController =
-    new TranslationController(this.cache, new TranslationService());
+    new TranslationController(this.cache, this.translationService);
 
-  constructor() {
+  constructor(port: number) {
+    this.port = process.env.PORT || port;
     const tranlsationRouter = new TranslationRouter(
       this.router,
       this.cacheMiddleware,
@@ -50,10 +52,9 @@ class Server {
   public stopServer(): true | void {
     this.server?.close((err: any) => {
       if (err) throw new Error(err);
-      return true;
     });
   }
 }
 
-const appServer: Server = new Server();
+const appServer: Server = new Server(9000);
 appServer.startServer();

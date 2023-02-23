@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { TranslationException } from '../exception/Translation.exception';
 import { validationResult, Result, ValidationError } from 'express-validator';
 import { ValidatorException } from '../../exceptions/Validator.exception';
-import { TranslationText } from '../../translation/types/Translation-text.type';
+import { TranslationText } from '../types/Translation-text.type';
 import { Cache } from '../../cache/Cache';
 import { ItranslationService } from '../interface/Translation-service.interface';
 
