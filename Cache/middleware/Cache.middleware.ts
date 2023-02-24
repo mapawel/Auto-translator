@@ -22,6 +22,7 @@ export class CacheMiddleware {
 
       const foundInCache: TranslationText | undefined =
         await this.cache.readOne(target, text);
+
       if (foundInCache) return res.json(foundInCache);
       next();
     } catch (err: any) {

@@ -40,7 +40,10 @@ describe('E2E test suite:', () => {
     // when
     const spyCacheSave = sinon.spy(appServer.cache, 'saveOne');
     const spyCacheRead = sinon.spy(appServer.cache, 'readOne');
-    const spyTranslationServTranslate = sinon.spy(appServer.translationService, 'translate');
+    const spyTranslationServTranslate = sinon.spy(
+      appServer.translationService,
+      'translate'
+    );
 
     const response = await request(server)
       .post('/translation')
@@ -94,5 +97,21 @@ describe('E2E test suite:', () => {
     // then
     assert.equal(response.statusCode, 500);
     assert.deepEqual(response.body, 'Server error on try to translate.');
+  });
+
+  it('should xxx', async () => {
+    //when
+    const response = await request(server)
+      .post('/translation')
+      .send({ notValidKey: 'value' })
+      .expect('Content-Type', /json/);
+
+    // then
+    assert.equal(response.statusCode, 400);
+
+    const responseStringified: string = JSON.stringify(response.body);
+    assert.match(responseStringified, /errors/);
+    assert.match(responseStringified, /Validation failed/);
+    assert.match(responseStringified, /Invalid value/);
   });
 });

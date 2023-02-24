@@ -8,7 +8,7 @@ export class Cache {
     target: string,
     key: TranslationText
   ): Promise<TranslationText | undefined> {
-    return this.cacheService.read(target, key);
+    return await this.cacheService.read(target, key);
   }
 
   public async saveOne(
@@ -16,17 +16,17 @@ export class Cache {
     key: TranslationText,
     data: TranslationText
   ): Promise<boolean> {
-    return this.cacheService.save(target, key, data);
+    return await this.cacheService.save(target, key, data);
   }
 
   public async removeOne(
     target: string,
     key: TranslationText
   ): Promise<boolean> {
-    return this.cacheService.remove(target, key);
+    return await this.cacheService.remove(target, key);
   }
 
   public async clearCache(): Promise<boolean> {
-    return this.cacheService.clearCache();
+    return await this.cacheService.clearCache();
   }
 }
